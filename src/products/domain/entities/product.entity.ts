@@ -2,10 +2,10 @@ import { Entity } from '@/shared/domain/entities/entity'
 import { ProductValidatorFactory } from '../validators/product.validator'
 
 export type ProductProps = {
-  name?: string
-  sku?: string
-  stock?: number
-  price?: number
+  name: string
+  sku: string
+  stock: number
+  price: number
   createdAt?: Date
   updatedAt?: Date
 }

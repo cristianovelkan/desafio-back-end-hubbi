@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
   IsInt,
+  IsPositive,
   IsNumber,
   MaxLength,
 } from 'class-validator'
@@ -24,10 +25,12 @@ export class ProductRules {
   @IsNotEmpty()
   @IsNumber()
   @IsInt()
+  @IsPositive()
   stock: number
 
   @IsNotEmpty()
   @IsNumber()
+  @IsPositive()
   price: number
 
   @IsDate()
