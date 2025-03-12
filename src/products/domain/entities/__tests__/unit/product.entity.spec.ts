@@ -22,6 +22,12 @@ describe('ProductEntity unit tests', () => {
     expect(typeof sut.props.name).toBe('string')
   })
 
+  it('Name Setter', () => {
+    sut['name'] = 'other name'
+    expect(sut.props.name).toEqual('other name')
+    expect(typeof sut.props.name).toBe('string')
+  })
+
   it('Sku getter', () => {
     expect(sut.props.sku).toBeDefined()
     expect(sut.props.sku).toEqual(props.sku)
@@ -47,6 +53,21 @@ describe('ProductEntity unit tests', () => {
 
   it('UpdatedAt getter', () => {
     expect(sut.props.updatedAt).toBeDefined()
+    expect(sut.props.updatedAt).toBeInstanceOf(Date)
+  })
+
+  it('Should update a user', () => {
+    const newProps = ProductDataBuilder({
+      name: 'new name',
+      sku: 'new sku',
+      stock: 85,
+      price: 54.2,
+    })
+    sut.update(newProps)
+    expect(sut.props.name).toEqual(newProps.name)
+    expect(sut.props.sku).toEqual(newProps.sku)
+    expect(sut.props.stock).toEqual(newProps.stock)
+    expect(sut.props.price).toEqual(newProps.price)
     expect(sut.props.updatedAt).toBeInstanceOf(Date)
   })
 })
