@@ -1,3 +1,6 @@
+import { Entity } from '@/shared/domain/entities/entity'
+import { ProductValidatorFactory } from '../validators/product.validator'
+
 export type ProductProps = {
   name?: string
   sku?: string
@@ -6,13 +9,19 @@ export type ProductProps = {
   createdAt?: Date
   updatedAt?: Date
 }
-export class ProductEntity {
-  constructor(public readonly props: ProductProps) {
+export class ProductEntity extends Entity<ProductProps> {
+  constructor(
+    public readonly props: ProductProps,
+    id?: string,
+  ) {
+    ProductEntity.validate(props)
+    super(props, id)
     this.props.createdAt = this.props.createdAt ?? new Date()
     this.props.updatedAt = new Date()
   }
 
   update(data: Partial<ProductProps>): void {
+    ProductEntity.validate({ ...this.props, ...data })
     Object.assign(this.props, data)
     this.props.updatedAt = new Date()
   }
@@ -55,5 +64,10 @@ export class ProductEntity {
 
   get updatedAt(): Date {
     return this.props.updatedAt
+  }
+
+  static validate(props: ProductProps) {
+    const validator = ProductValidatorFactory.create()
+    validator.validate(props)
   }
 }
