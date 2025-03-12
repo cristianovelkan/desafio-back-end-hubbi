@@ -1,17 +1,10 @@
-import { faker } from '@faker-js/faker'
 import { ProductEntity, ProductProps } from '../../product.entity'
+import { ProductDataBuilder } from '@/products/domain/testing/helpers/product-data-builder'
 describe('ProductEntity unit tests', () => {
   let props: ProductProps
   let sut: ProductEntity
   beforeEach(() => {
-    props = {
-      name: faker.commerce.productName(),
-      sku: faker.commerce.isbn(10),
-      stock: faker.number.int({ min: 10, max: 100 }),
-      price: faker.number.float({ multipleOf: 0.25, min: 100, max: 500 }),
-      createdAt: faker.date.recent(),
-      updatedAt: faker.date.recent(),
-    }
+    props = ProductDataBuilder({})
     sut = new ProductEntity(props)
   })
   it('Constructor method', () => {
