@@ -1,13 +1,16 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { ProductEntity, ProductProps } from '../../product.entity'
 import { ProductDataBuilder } from '@/products/domain/testing/helpers/product-data-builder'
 describe('ProductEntity unit tests', () => {
   let props: ProductProps
   let sut: ProductEntity
   beforeEach(() => {
+    ProductEntity.validate = jest.fn()
     props = ProductDataBuilder({})
     sut = new ProductEntity(props)
   })
   it('Constructor method', () => {
+    expect(ProductEntity.validate).toHaveBeenCalled()
     expect(sut.props.name).toEqual(props.name)
     expect(sut.props.sku).toEqual(props.sku)
     expect(sut.props.stock).toEqual(props.stock)
@@ -56,13 +59,14 @@ describe('ProductEntity unit tests', () => {
     expect(sut.props.updatedAt).toBeInstanceOf(Date)
   })
 
-  it('Should update a user', () => {
+  it('Should update a product', () => {
     const newProps = ProductDataBuilder({
       name: 'new name',
       sku: 'new sku',
       stock: 85,
       price: 54.2,
     })
+    expect(ProductEntity.validate).toHaveBeenCalled()
     sut.update(newProps)
     expect(sut.props.name).toEqual(newProps.name)
     expect(sut.props.sku).toEqual(newProps.sku)
