@@ -2,7 +2,7 @@ import { ProductInMemoryRepository } from '@/products/infrastructure/database/in
 import { CreateProductUseCase } from '@/products/application/usecases/create-product.usecase'
 import { ProductDataBuilder } from '@/products/domain/testing/helpers/product-data-builder'
 import { ConflictError } from '@/shared/domain/errors/conflict-error'
-import { BadRequestError } from '@/products/application/errors/bad-request-error'
+import { BadRequestError } from '@/shared/application/errors/bad-request-error'
 
 describe('CreateProductUseCase unit tests', () => {
   let sut: CreateProductUseCase.UseCase
