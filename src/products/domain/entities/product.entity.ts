@@ -1,5 +1,6 @@
 import { Entity } from '@/shared/domain/entities/entity'
 import { ProductValidatorFactory } from '../validators/product.validator'
+import { EntityValidationError } from '@/shared/domain/errors/validation-error'
 
 export type ProductProps = {
   name: string
@@ -68,6 +69,9 @@ export class ProductEntity extends Entity<ProductProps> {
 
   static validate(props: ProductProps) {
     const validator = ProductValidatorFactory.create()
-    validator.validate(props)
+    const isValid = validator.validate(props)
+    if (!isValid) {
+      throw new EntityValidationError(validator.errors)
+    }
   }
 }
