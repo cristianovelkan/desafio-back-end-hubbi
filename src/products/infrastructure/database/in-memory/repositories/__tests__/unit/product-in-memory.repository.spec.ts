@@ -58,4 +58,67 @@ describe('ProductInMemoryRepository unit tests', () => {
     expect(spyFilter).toHaveBeenCalled()
     expect(itemsFiltered).toStrictEqual([items[0], items[1]])
   })
+
+  it('Should sort by createAt when sort param is null', async () => {
+    const createdAt = new Date()
+    const items = [
+      new ProductEntity(ProductDataBuilder({ name: 'Test', createdAt })),
+      new ProductEntity(
+        ProductDataBuilder({
+          name: 'TEST',
+          createdAt: new Date(createdAt.getTime() + 1),
+        }),
+      ),
+      new ProductEntity(
+        ProductDataBuilder({
+          name: 'fake',
+          createdAt: new Date(createdAt.getTime() + 2),
+        }),
+      ),
+    ]
+    const itemsSorted = await sut['applySort'](items, null, null)
+    expect(itemsSorted).toStrictEqual([items[2], items[1], items[0]])
+  })
+
+  it('Should sort by name field', async () => {
+    const items = [
+      new ProductEntity(ProductDataBuilder({ name: 'c' })),
+      new ProductEntity(
+        ProductDataBuilder({
+          name: 'd',
+        }),
+      ),
+      new ProductEntity(
+        ProductDataBuilder({
+          name: 'a',
+        }),
+      ),
+    ]
+    let itemsSorted = await sut['applySort'](items, 'name', 'asc')
+    expect(itemsSorted).toStrictEqual([items[2], items[0], items[1]])
+
+    itemsSorted = await sut['applySort'](items, 'name', null)
+    expect(itemsSorted).toStrictEqual([items[1], items[0], items[2]])
+  })
+
+  it('Should sort by price field', async () => {
+    const items = [
+      new ProductEntity(ProductDataBuilder({ price: 10 })),
+      new ProductEntity(
+        ProductDataBuilder({
+          price: 20,
+        }),
+      ),
+      new ProductEntity(
+        ProductDataBuilder({
+          price: 5,
+        }),
+      ),
+    ]
+    let itemsSorted = await sut['applySort'](items, 'price', 'asc')
+    expect(itemsSorted).toStrictEqual([items[2], items[0], items[1]])
+
+    itemsSorted = await sut['applySort'](items, 'price', null)
+    expect(itemsSorted).toStrictEqual([items[1], items[0], items[2]])
+  })
 })
