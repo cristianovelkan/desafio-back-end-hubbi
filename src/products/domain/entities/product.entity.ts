@@ -11,6 +11,8 @@ export type ProductProps = {
   updatedAt?: Date
 }
 export class ProductEntity extends Entity<ProductProps> {
+  email: any
+  password: any
   constructor(
     public readonly props: ProductProps,
     id?: string,
@@ -31,7 +33,7 @@ export class ProductEntity extends Entity<ProductProps> {
     return this.props.name
   }
 
-  private set name(value: string) {
+  set name(value: string) {
     this.props.name = value
   }
 
@@ -39,7 +41,7 @@ export class ProductEntity extends Entity<ProductProps> {
     return this.props.sku
   }
 
-  private set sku(value: string) {
+  set sku(value: string) {
     this.props.sku = value
   }
 
@@ -47,7 +49,7 @@ export class ProductEntity extends Entity<ProductProps> {
     return this.props.stock
   }
 
-  private set stock(value: number) {
+  set stock(value: number) {
     this.props.stock = value
   }
 
@@ -55,7 +57,7 @@ export class ProductEntity extends Entity<ProductProps> {
     return this.props.price
   }
 
-  private set price(value: number) {
+  set price(value: number) {
     this.props.price = value
   }
 
