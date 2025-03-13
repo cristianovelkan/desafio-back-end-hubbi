@@ -4,7 +4,7 @@ import { ProductDataBuilder } from '@/products/domain/testing/helpers/product-da
 import { ConflictError } from '@/shared/domain/errors/conflict-error'
 import { BadRequestError } from '@/products/application/errors/bad-request-error'
 
-describe('ProductInMemoryRepository unit tests', () => {
+describe('CreateProductUseCase unit tests', () => {
   let sut: CreateProductUseCase.UseCase
   let repository: ProductInMemoryRepository
 
