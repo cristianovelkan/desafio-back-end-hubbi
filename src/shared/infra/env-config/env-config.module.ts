@@ -6,6 +6,7 @@ import { join } from 'node:path'
 @Module({
   imports: [ConfigModule.forRoot()],
   providers: [EnvConfigService],
+  exports: [EnvConfigService],
 })
 export class EnvConfigModule {
   static forRoot(options: ConfigModuleOptions): DynamicModule {
