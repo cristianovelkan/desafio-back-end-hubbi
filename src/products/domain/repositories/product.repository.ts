@@ -1,6 +1,7 @@
-import { RepositoryInterface } from '@/shared/domain/repositories/repository-contract'
 import { ProductEntity } from '../entities/product.entity'
-
-export interface ProductRepository extends RepositoryInterface<ProductEntity> {
+import { SearchableRepositoryInterface } from '@/shared/domain/repositories/searchable-repository-contract'
+export interface ProductRepository
+  extends SearchableRepositoryInterface<ProductEntity, any, any> {
+  findBySku(sku: string): Promise<ProductEntity>
   skuExists(sku: string): Promise<void>
 }
