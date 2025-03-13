@@ -1,6 +1,7 @@
 import { ProductRepository } from '@/products/domain/repositories/product.repository'
 import { BadRequestError } from '../errors/bad-request-error'
 import { ProductEntity } from '@/products/domain/entities/product.entity'
+import { ProductOutput } from '../dtos/product-output'
 
 export namespace CreateProductUseCase {
   export type Input = {
@@ -10,14 +11,7 @@ export namespace CreateProductUseCase {
     price: number
   }
 
-  export type Output = {
-    id: string
-    name: string
-    sku: string
-    stock: number
-    price: number
-    createdAt: Date
-  }
+  export type Output = ProductOutput
 
   export class UseCase {
     constructor(private productRepository: ProductRepository.Repository) {}
