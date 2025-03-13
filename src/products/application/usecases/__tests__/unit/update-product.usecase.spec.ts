@@ -20,7 +20,7 @@ describe('UpdateProductUseCase unit tests', () => {
         id: 'fakeId',
         name: 'test name',
         sku: '',
-        stock: '',
+        stock: 0,
         price: 0,
       }),
     ).rejects.toThrow(new NotFoundError('NotFoundError: Entity not found'))
@@ -32,7 +32,7 @@ describe('UpdateProductUseCase unit tests', () => {
         id: 'fakeId',
         name: '',
         sku: '',
-        stock: '',
+        stock: 0,
         price: 0,
       }),
     ).rejects.toThrow(new BadRequestError('Name not provided'))
@@ -47,7 +47,7 @@ describe('UpdateProductUseCase unit tests', () => {
       id: items[0]._id,
       name: 'new name',
       sku: 'new sku',
-      stock: '10',
+      stock: 10,
       price: 10,
     })
     expect(spyUpdate).toHaveBeenCalledTimes(1)

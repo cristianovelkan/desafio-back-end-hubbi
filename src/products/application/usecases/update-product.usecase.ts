@@ -8,7 +8,7 @@ export namespace UpdateProductUseCase {
     id: string
     name: string
     sku: string
-    stock: string
+    stock: number
     price: number
   }
 
@@ -24,7 +24,7 @@ export namespace UpdateProductUseCase {
       const entity = await this.productRepository.findById(input.id)
       entity.name = input.name
       entity.sku = input.sku
-      entity.stock = parseInt(input.stock)
+      entity.stock = input.stock
       entity.price = input.price
       await this.productRepository.update(entity)
       return ProductOutputMapper.toOutput(entity)
