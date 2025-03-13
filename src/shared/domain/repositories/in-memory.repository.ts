@@ -54,7 +54,7 @@ export abstract class InMemoryRepository<E extends Entity>
         }
         resolve(entity)
       } catch (error) {
-        reject(error)
+        reject(Error(error))
       }
     })
   }
