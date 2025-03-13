@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common'
-import { ProductsService } from './products.service'
 import { ProductsController } from './products.controller'
 import { CreateProductUseCase } from '../application/usecases/create-product.usecase'
 import { ProductInMemoryRepository } from './database/in-memory/repositories/product-in-memory.repository'
@@ -11,7 +10,6 @@ import { DeleteProductUseCase } from '../application/usecases/delete-product.use
 @Module({
   controllers: [ProductsController],
   providers: [
-    ProductsService,
     {
       provide: 'ProductRepository',
       useClass: ProductInMemoryRepository,
