@@ -127,4 +127,111 @@ describe('ProductEntity integration tests', () => {
     }
     new ProductEntity(props)
   })
+
+  describe('Update method', () => {
+    it('Should throw an error when update a product with invalid name', () => {
+      const entity = new ProductEntity(ProductDataBuilder({}))
+
+      let newProps = {
+        ...ProductDataBuilder({}),
+        name: null,
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+      newProps = {
+        ...ProductDataBuilder({}),
+        name: '',
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+      newProps = {
+        ...ProductDataBuilder({}),
+        name: 'a'.repeat(256),
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+    })
+
+    it('Should throw an error when update a product with invalid sku', () => {
+      const entity = new ProductEntity(ProductDataBuilder({}))
+
+      let newProps = {
+        ...ProductDataBuilder({}),
+        sku: null,
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+      newProps = {
+        ...ProductDataBuilder({}),
+        sku: '',
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+      newProps = {
+        ...ProductDataBuilder({}),
+        sku: 'a'.repeat(256),
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+    })
+
+    it('Should throw an error when update a product with invalid stock', () => {
+      const entity = new ProductEntity(ProductDataBuilder({}))
+
+      let newProps = {
+        ...ProductDataBuilder({}),
+        stock: null,
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+      newProps = {
+        ...ProductDataBuilder({}),
+        stock: -1,
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+      newProps = {
+        ...ProductDataBuilder({}),
+        stock: 0,
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+      newProps = {
+        ...ProductDataBuilder({}),
+        stock: 0.5,
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+    })
+
+    it('Should throw an error when update a product with invalid price', () => {
+      const entity = new ProductEntity(ProductDataBuilder({}))
+
+      let newProps = {
+        ...ProductDataBuilder({}),
+        price: null,
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+      newProps = {
+        ...ProductDataBuilder({}),
+        price: -10,
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+      newProps = {
+        ...ProductDataBuilder({}),
+        price: 0,
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+      newProps = {
+        ...ProductDataBuilder({}),
+        price: '10' as any,
+      }
+      expect(() => entity.update(newProps)).toThrow(EntityValidationError)
+    })
+
+    it('Should be a valid product', () => {
+      expect.assertions(0)
+      const props: ProductProps = {
+        ...ProductDataBuilder({}),
+      }
+      const entity = new ProductEntity(props)
+      entity.update({
+        ...props,
+        name: 'new name',
+        sku: 'new sku',
+        stock: 10,
+        price: 10,
+      })
+    })
+  })
 })
