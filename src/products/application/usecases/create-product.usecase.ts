@@ -1,7 +1,7 @@
 import { ProductRepository } from '@/products/domain/repositories/product.repository'
 import { BadRequestError } from '../../../shared/application/errors/bad-request-error'
 import { ProductEntity } from '@/products/domain/entities/product.entity'
-import { ProductOutput } from '../dtos/product-output'
+import { ProductOutput, ProductOutputMapper } from '../dtos/product-output'
 import { UseCase as DefaultUseCase } from '@/shared/application/usecases/use-case'
 
 export namespace CreateProductUseCase {
@@ -29,7 +29,7 @@ export namespace CreateProductUseCase {
       const entity = new ProductEntity(input)
 
       await this.productRepository.insert(entity)
-      return entity.toJSON()
+      return ProductOutputMapper.toOutput(entity)
     }
   }
 }
