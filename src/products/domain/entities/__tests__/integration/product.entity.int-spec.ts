@@ -119,4 +119,12 @@ describe('ProductEntity integration tests', () => {
     }
     expect(() => new ProductEntity(props)).toThrow(EntityValidationError)
   })
+
+  it('Should be a valid product', () => {
+    expect.assertions(0)
+    const props: ProductProps = {
+      ...ProductDataBuilder({}),
+    }
+    new ProductEntity(props)
+  })
 })
