@@ -3,17 +3,30 @@ import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.se
 import { ProductEntity } from '@/products/domain/entities/product.entity'
 import { ProductRepository } from '@/products/domain/repositories/product.repository'
 import { ProductModelMapper } from '../models/product-model.mapper'
+import { ConflictError } from '@/shared/domain/errors/conflict-error'
 export class ProductPrismaRepository implements ProductRepository.Repository {
   sortableFields: string[] = ['name', 'price', 'createdAt']
 
   constructor(private prismaService: PrismaService) {}
 
-  findBySku(sku: string): Promise<ProductEntity> {
-    throw new Error('Method not implemented.')
+  async findBySku(sku: string): Promise<ProductEntity> {
+    try {
+      const product = await this.prismaService.product.findUnique({
+        where: { sku },
+      })
+      return ProductModelMapper.toEntity(product)
+    } catch {
+      throw new NotFoundError(`ProductModel not found using sku ${sku}`)
+    }
   }
 
-  skuExists(sku: string): Promise<void> {
-    throw new Error('Method not implemented.')
+  async skuExists(sku: string): Promise<void> {
+    const product = await this.prismaService.product.findUnique({
+      where: { sku },
+    })
+    if (product) {
+      throw new ConflictError(`Sku already used`)
+    }
   }
 
   async search(
