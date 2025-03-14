@@ -76,12 +76,21 @@ export class ProductPrismaRepository implements ProductRepository.Repository {
     return models.map(model => ProductModelMapper.toEntity(model))
   }
 
-  update(entity: ProductEntity): Promise<void> {
-    throw new Error('Method not implemented.')
+  async update(entity: ProductEntity): Promise<void> {
+    await this._get(entity._id)
+    await this.prismaService.product.update({
+      data: entity.toJSON(),
+      where: {
+        id: entity._id,
+      },
+    })
   }
 
-  delete(id: string): Promise<void> {
-    throw new Error('Method not implemented.')
+  async delete(id: string): Promise<void> {
+    await this._get(id)
+    await this.prismaService.product.delete({
+      where: { id },
+    })
   }
 
   protected async _get(id: string): Promise<ProductEntity> {
