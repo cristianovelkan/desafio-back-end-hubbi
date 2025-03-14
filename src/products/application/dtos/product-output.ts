@@ -7,6 +7,7 @@ export type ProductOutput = {
   stock: number
   price: number
   createdAt: Date
+  updatedAt?: Date
 }
 
 export class ProductOutputMapper {

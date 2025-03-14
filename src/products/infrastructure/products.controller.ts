@@ -18,6 +18,9 @@ import { DeleteProductUseCase } from '../application/usecases/delete-product.use
 import { GetProductUseCase } from '../application/usecases/get-product.usecase'
 import { ListProductsUseCase } from '../application/usecases/list-products.usecase'
 import { ListProductsDto } from './dtos/list-products.dto'
+import { ProductOutput } from '../application/dtos/product-output'
+import { ProductPresenter } from './presenters/product.presenter'
+
 @Controller('products')
 export class ProductsController {
   @Inject(CreateProductUseCase.UseCase)
@@ -35,9 +38,14 @@ export class ProductsController {
   @Inject(ListProductsUseCase.UseCase)
   private listProductsUseCase: ListProductsUseCase.UseCase
 
+  static productToResponse(output: ProductOutput) {
+    return new ProductPresenter(output)
+  }
+
   @Post()
   async create(@Body() createproductDto: CreateProductDto) {
-    return this.createproductUseCase.execute(createproductDto)
+    const output = await this.createproductUseCase.execute(createproductDto)
+    return ProductsController.productToResponse(output)
   }
 
   @HttpCode(200)
@@ -48,7 +56,8 @@ export class ProductsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.getProductUseCase.execute({ id })
+    const output = await this.getProductUseCase.execute({ id })
+    return ProductsController.productToResponse(output)
   }
 
   @Put(':id')
@@ -56,7 +65,11 @@ export class ProductsController {
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
   ) {
-    return this.updateProductUseCase.execute({ id, ...updateProductDto })
+    const output = await this.updateProductUseCase.execute({
+      id,
+      ...updateProductDto,
+    })
+    return ProductsController.productToResponse(output)
   }
 
   @HttpCode(204)

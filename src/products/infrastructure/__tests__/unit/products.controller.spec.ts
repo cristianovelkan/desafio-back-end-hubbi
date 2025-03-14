@@ -6,6 +6,7 @@ import { UpdateProductUseCase } from '@/products/application/usecases/update-pro
 import { UpdateProductDto } from '../../dtos/update-product.dto'
 import { GetProductUseCase } from '@/products/application/usecases/get-product.usecase'
 import { ListProductsUseCase } from '@/products/application/usecases/list-products.usecase'
+import { ProductPresenter } from '../../presenters/product.presenter'
 
 describe('ProductsController unit tests', () => {
   let sut: ProductsController
@@ -18,10 +19,11 @@ describe('ProductsController unit tests', () => {
     props = {
       id,
       name: 'Banana',
-      price: 10,
-      stock: 10,
       sku: 'abc123456',
+      stock: 10,
+      price: 10,
       createdAt: new Date(),
+      updatedAt: new Date(),
     }
   })
 
@@ -37,12 +39,13 @@ describe('ProductsController unit tests', () => {
     sut['createproductUseCase'] = mockCreateProductUseCase as any
     const input: CreateProductDto = {
       name: 'Banana',
-      price: 10,
-      stock: 10,
       sku: 'abc123456',
+      stock: 10,
+      price: 10,
     }
-    const result = await sut.create(input)
-    expect(output).toMatchObject(result)
+    const presenter = await sut.create(input)
+    expect(presenter).toBeInstanceOf(ProductPresenter)
+    expect(presenter).toStrictEqual(new ProductPresenter(output))
     expect(mockCreateProductUseCase.execute).toHaveBeenCalledWith(input)
   })
 
@@ -54,12 +57,13 @@ describe('ProductsController unit tests', () => {
     sut['updateProductUseCase'] = mockUpdateProductUseCase as any
     const input: UpdateProductDto = {
       name: 'new name',
-      price: 20,
+      sku: 'new sku',
       stock: 20,
-      sku: 'def123456',
+      price: 20,
     }
-    const result = await sut.update(id, input)
-    expect(output).toMatchObject(result)
+    const presenter = await sut.update(id, input)
+    expect(presenter).toBeInstanceOf(ProductPresenter)
+    expect(presenter).toStrictEqual(new ProductPresenter(output))
     expect(mockUpdateProductUseCase.execute).toHaveBeenCalledWith({
       id,
       ...input,
@@ -85,8 +89,9 @@ describe('ProductsController unit tests', () => {
       execute: jest.fn().mockReturnValue(Promise.resolve(output)),
     }
     sut['getProductUseCase'] = mockGetProductUseCase as any
-    const result = await sut.findOne(id)
-    expect(output).toStrictEqual(result)
+    const presenter = await sut.findOne(id)
+    expect(presenter).toBeInstanceOf(ProductPresenter)
+    expect(presenter).toStrictEqual(new ProductPresenter(output))
     expect(mockGetProductUseCase.execute).toHaveBeenCalledWith({
       id,
     })
