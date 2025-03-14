@@ -113,7 +113,7 @@ export class ProductPrismaRepository implements ProductRepository.Repository {
       })
       return ProductModelMapper.toEntity(product)
     } catch {
-      throw new NotFoundError(`ProductModel not found usind ID ${id}`)
+      throw new NotFoundError(`ProductModel not found using ID ${id}`)
     }
   }
 }
