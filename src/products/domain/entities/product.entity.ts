@@ -11,8 +11,6 @@ export type ProductProps = {
   updatedAt?: Date
 }
 export class ProductEntity extends Entity<ProductProps> {
-  email: any
-  password: any
   constructor(
     public readonly props: ProductProps,
     id?: string,
