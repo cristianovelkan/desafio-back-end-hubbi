@@ -6,6 +6,7 @@ import { DatabaseModule } from '@/shared/infrastructure/database/database.module
 import { NotFoundError } from '@/shared/domain/errors/not-found-error'
 import { ProductEntity } from '@/products/domain/entities/product.entity'
 import { ProductDataBuilder } from '@/products/domain/testing/helpers/product-data-builder'
+import { ProductRepository } from '@/products/domain/repositories/product.repository'
 
 describe('ProductPrismaRepository integration tests', () => {
   const prismaService = new PrismaClient()
@@ -71,5 +72,95 @@ describe('ProductPrismaRepository integration tests', () => {
         updatedAt: null,
       }),
     )
+  })
+
+  describe('search method tests', () => {
+    it('should apply only pagination when the other params are null', async () => {
+      const createdAt = new Date()
+      const entities: ProductEntity[] = []
+      const arrange = Array(20).fill(ProductDataBuilder({}))
+      arrange.forEach((element, index) => {
+        entities.push(
+          new ProductEntity({
+            ...element,
+            name: `Product${index}`,
+            sku: `sku${index}`,
+            stock: index + 1,
+            price: index + 1,
+            createdAt: new Date(createdAt.getTime() + index),
+          }),
+        )
+      })
+
+      await prismaService.product.createMany({
+        data: entities.map(item => item.toJSON()),
+      })
+
+      const searchOutput = await sut.search(
+        new ProductRepository.SearchParams(),
+      )
+      const items = searchOutput.items
+
+      expect(searchOutput).toBeInstanceOf(ProductRepository.SearchResult)
+      expect(searchOutput.total).toBe(20)
+      searchOutput.items.forEach(item => {
+        expect(item).toBeInstanceOf(ProductEntity)
+      })
+      items.reverse().forEach((item, index) => {
+        expect(`sku${index + 5}`).toBe(item.sku)
+      })
+    })
+
+    it('should search using filter, sort and paginate', async () => {
+      const createdAt = new Date()
+      const entities: ProductEntity[] = []
+      const arrange = ['test', 'a', 'TEST', 'b', 'TeSt']
+      arrange.forEach((element, index) => {
+        entities.push(
+          new ProductEntity({
+            ...ProductDataBuilder({ name: element }),
+            createdAt: new Date(createdAt.getTime() + index),
+          }),
+        )
+      })
+
+      await prismaService.product.createMany({
+        data: entities.map(item => item.toJSON()),
+      })
+
+      const searchOutputPage1 = await sut.search(
+        new ProductRepository.SearchParams({
+          page: 1,
+          perPage: 2,
+          sort: 'name',
+          sortDir: 'asc',
+          filter: 'TEST',
+        }),
+      )
+
+      expect({
+        ...searchOutputPage1.items[0].toJSON(),
+        updatedAt: null,
+      }).toMatchObject({ ...entities[0].toJSON(), updatedAt: null })
+      expect({
+        ...searchOutputPage1.items[1].toJSON(),
+        updatedAt: null,
+      }).toMatchObject({ ...entities[4].toJSON(), updatedAt: null })
+
+      const searchOutputPage2 = await sut.search(
+        new ProductRepository.SearchParams({
+          page: 2,
+          perPage: 2,
+          sort: 'name',
+          sortDir: 'asc',
+          filter: 'TEST',
+        }),
+      )
+
+      expect({
+        ...searchOutputPage2.items[0].toJSON(),
+        updatedAt: null,
+      }).toMatchObject({ ...entities[2].toJSON(), updatedAt: null })
+    })
   })
 })
