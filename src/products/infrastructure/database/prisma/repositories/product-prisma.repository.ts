@@ -4,7 +4,7 @@ import { ProductEntity } from '@/products/domain/entities/product.entity'
 import { ProductRepository } from '@/products/domain/repositories/product.repository'
 import { ProductModelMapper } from '../models/product-model.mapper'
 export class ProductPrismaRepository implements ProductRepository.Repository {
-  sortableFields: string[]
+  sortableFields: string[] = ['name', 'price', 'createdAt']
 
   constructor(private prismaService: PrismaService) {}
 
@@ -16,10 +16,50 @@ export class ProductPrismaRepository implements ProductRepository.Repository {
     throw new Error('Method not implemented.')
   }
 
-  search(
+  async search(
     props: ProductRepository.SearchParams,
   ): Promise<ProductRepository.SearchResult> {
-    throw new Error('Method not implemented.')
+    const sortable = this.sortableFields?.includes(props.sort) || false
+    const orderByField = sortable ? props.sort : 'createdAt'
+    const orderByDir = sortable ? props.sortDir : 'desc'
+
+    const count = await this.prismaService.product.count({
+      ...(props.filter && {
+        where: {
+          name: {
+            contains: props.filter,
+            mode: 'insensitive',
+          },
+        },
+      }),
+    })
+
+    const models = this.prismaService.product.findMany({
+      ...(props.filter && {
+        where: {
+          name: {
+            contains: props.filter,
+            mode: 'insensitive',
+          },
+        },
+        orderBy: {
+          [orderByField]: orderByDir,
+        },
+        skip:
+          props.page && props.page > 0 ? (props.page - 1) * props.perPage : 1,
+        take: props.perPage && props.perPage > 0 ? props.perPage : 15,
+      }),
+    })
+
+    return new ProductRepository.SearchResult({
+      items: (await models).map(model => ProductModelMapper.toEntity(model)),
+      total: count,
+      currentPage: props.page,
+      perPage: props.perPage,
+      sort: orderByField,
+      sortDir: orderByDir,
+      filter: props.filter,
+    })
   }
 
   async insert(entity: ProductEntity): Promise<void> {
