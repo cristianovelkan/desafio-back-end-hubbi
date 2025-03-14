@@ -7,6 +7,7 @@ import { NotFoundError } from '@/shared/domain/errors/not-found-error'
 import { ProductEntity } from '@/products/domain/entities/product.entity'
 import { ProductDataBuilder } from '@/products/domain/testing/helpers/product-data-builder'
 import { ProductRepository } from '@/products/domain/repositories/product.repository'
+import { ConflictError } from '@/shared/domain/errors/conflict-error'
 
 describe('ProductPrismaRepository integration tests', () => {
   const prismaService = new PrismaClient()
@@ -26,7 +27,7 @@ describe('ProductPrismaRepository integration tests', () => {
   })
 
   it('should throws error when entity not found', async () => {
-    expect(() => sut.findById('FakeId')).rejects.toThrow(
+    await expect(() => sut.findById('FakeId')).rejects.toThrow(
       new NotFoundError('ProductModel not found usind ID FakeId'),
     )
   })
@@ -76,7 +77,7 @@ describe('ProductPrismaRepository integration tests', () => {
 
   it('should throws error on update when a entity not found', async () => {
     const entity = new ProductEntity(ProductDataBuilder({}))
-    expect(() => sut.update(entity)).rejects.toThrow(
+    await expect(() => sut.update(entity)).rejects.toThrow(
       new NotFoundError(`ProductModel not found usind ID ${entity._id}`),
     )
   })
@@ -99,7 +100,7 @@ describe('ProductPrismaRepository integration tests', () => {
 
   it('should throws error on delete when a entity not found', async () => {
     const entity = new ProductEntity(ProductDataBuilder({}))
-    expect(() => sut.delete(entity._id)).rejects.toThrow(
+    await expect(() => sut.delete(entity._id)).rejects.toThrow(
       new NotFoundError(`ProductModel not found usind ID ${entity._id}`),
     )
   })
@@ -117,6 +118,41 @@ describe('ProductPrismaRepository integration tests', () => {
       },
     })
     expect(output).toBeNull()
+  })
+
+  it('should throws error when a entity not found', async () => {
+    await expect(() => sut.findBySku('abc123456')).rejects.toThrow(
+      new NotFoundError(`ProductModel not found using sku abc123456`),
+    )
+  })
+
+  it('should finds a entity by sku', async () => {
+    const entity = new ProductEntity(ProductDataBuilder({ sku: 'abc123456' }))
+    await prismaService.product.create({
+      data: entity.toJSON(),
+    })
+    const output = await sut.findBySku('abc123456')
+
+    expect({ ...output.toJSON(), updatedAt: null }).toStrictEqual({
+      ...entity.toJSON(),
+      updatedAt: null,
+    })
+  })
+
+  it('should throws error when a entity found by sku', async () => {
+    const entity = new ProductEntity(ProductDataBuilder({ sku: 'abc123456' }))
+    await prismaService.product.create({
+      data: entity.toJSON(),
+    })
+
+    await expect(() => sut.skuExists('abc123456')).rejects.toThrow(
+      new ConflictError(`Sku already used`),
+    )
+  })
+
+  it('should not finds a entity by sku', async () => {
+    expect.assertions(0)
+    await sut.skuExists('abc123456')
   })
 
   describe('search method tests', () => {
