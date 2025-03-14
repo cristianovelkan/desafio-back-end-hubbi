@@ -1,7 +1,8 @@
+import { NotFoundError } from '@/shared/domain/errors/not-found-error'
 import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.service'
 import { ProductEntity } from '@/products/domain/entities/product.entity'
 import { ProductRepository } from '@/products/domain/repositories/product.repository'
-
+import { ProductModelMapper } from '../models/product-model.mapper'
 export class ProductPrismaRepository implements ProductRepository.Repository {
   sortableFields: string[]
 
@@ -26,7 +27,7 @@ export class ProductPrismaRepository implements ProductRepository.Repository {
   }
 
   findById(id: string): Promise<ProductEntity> {
-    throw new Error('Method not implemented.')
+    return this._get(id)
   }
 
   findAll(): Promise<ProductEntity[]> {
@@ -39,5 +40,16 @@ export class ProductPrismaRepository implements ProductRepository.Repository {
 
   delete(id: string): Promise<void> {
     throw new Error('Method not implemented.')
+  }
+
+  protected async _get(id: string): Promise<ProductEntity> {
+    try {
+      const product = await this.prismaService.product.findUnique({
+        where: { id },
+      })
+      return ProductModelMapper.toEntity(product)
+    } catch {
+      throw new NotFoundError(`ProductModel not found usind ID ${id}`)
+    }
   }
 }
