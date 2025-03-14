@@ -22,16 +22,19 @@ export class ProductPrismaRepository implements ProductRepository.Repository {
     throw new Error('Method not implemented.')
   }
 
-  insert(entity: ProductEntity): Promise<void> {
-    throw new Error('Method not implemented.')
+  async insert(entity: ProductEntity): Promise<void> {
+    await this.prismaService.product.create({
+      data: entity.toJSON(),
+    })
   }
 
   findById(id: string): Promise<ProductEntity> {
     return this._get(id)
   }
 
-  findAll(): Promise<ProductEntity[]> {
-    throw new Error('Method not implemented.')
+  async findAll(): Promise<ProductEntity[]> {
+    const models = await this.prismaService.product.findMany()
+    return models.map(model => ProductModelMapper.toEntity(model))
   }
 
   update(entity: ProductEntity): Promise<void> {
