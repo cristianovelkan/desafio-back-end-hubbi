@@ -1,18 +1,26 @@
 import { Module } from '@nestjs/common'
 import { ProductsController } from './products.controller'
 import { CreateProductUseCase } from '../application/usecases/create-product.usecase'
-import { ProductInMemoryRepository } from './database/in-memory/repositories/product-in-memory.repository'
 import { ProductRepository } from '../domain/repositories/product.repository'
 import { GetProductUseCase } from '../application/usecases/get-product.usecase'
 import { ListProductsUseCase } from '../application/usecases/list-products.usecase'
 import { UpdateProductUseCase } from '../application/usecases/update-product.usecase'
 import { DeleteProductUseCase } from '../application/usecases/delete-product.usecase'
+import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.service'
+import { ProductPrismaRepository } from './database/prisma/repositories/product-prisma.repository'
 @Module({
   controllers: [ProductsController],
   providers: [
     {
+      provide: 'PrismaService',
+      useClass: PrismaService,
+    },
+    {
       provide: 'ProductRepository',
-      useClass: ProductInMemoryRepository,
+      useFactory: (prismaService: PrismaService) => {
+        return new ProductPrismaRepository(prismaService)
+      },
+      inject: ['PrismaService'],
     },
     {
       provide: CreateProductUseCase.UseCase,
